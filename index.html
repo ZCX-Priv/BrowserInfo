@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览器信息查看器</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .info-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-section {
+            margin-bottom: 25px;
+        }
+        
+        h2 {
+            color: #3498db;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+            font-size: 1.3em;
+        }
+        
+        .info-item {
+            display: flex;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            width: 200px;
+            color: #555;
+        }
+        
+        .info-value {
+            flex: 1;
+            word-break: break-all;
+        }
+        
+        .user-agent {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+        
+        .feature-support {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        
+        .feature-item {
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .supported {
+            background-color: #e8f5e9;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .not-supported {
+            background-color: #ffebee;
+            border-left: 3px solid #f44336;
+        }
+        
+        .feature-icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .copy-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .copy-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .refresh-button {
+            display: block;
+            margin: 20px auto;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        
+        .refresh-button:hover {
+            background-color: #27ae60;
+        }
+        
+        @media (max-width: 768px) {
+            .info-item {
+                flex-direction: column;
+            }
+            
+            .info-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>浏览器详细信息查看器</h1>
+    
+    <div class="info-container">
+        <div class="info-section">
+            <h2>用户代理信息</h2>
+            <div class="info-item">
+                <div class="info-label">User Agent:</div>
+                <div class="info-value">
+                    <div id="userAgent" class="user-agent"></div>
+                    <button id="copyUA" class="copy-button">复制 User Agent</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>浏览器信息</h2>
+            <div class="info-item">
+                <div class="info-label">浏览器名称:</div>
+                <div id="browserName" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">浏览器版本:</div>
+                <div id="browserVersion" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">浏览器引擎:</div>
+                <div id="browserEngine" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">是否为移动设备:</div>
+                <div id="isMobile" class="info-value"></div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>操作系统信息</h2>
+            <div class="info-item">
+                <div class="info-label">操作系统:</div>
+                <div id="osInfo" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">设备类型:</div>
+                <div id="deviceType" class="info-value"></div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>屏幕和窗口信息</h2>
+            <div class="info-item">
+                <div class="info-label">屏幕分辨率:</div>
+                <div id="screenResolution" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">窗口大小:</div>
+                <div id="windowSize" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">设备像素比:</div>
+                <div id="pixelRatio" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">颜色深度:</div>
+                <div id="colorDepth" class="info-value"></div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>语言和时区</h2>
+            <div class="info-item">
+                <div class="info-label">浏览器语言:</div>
+                <div id="browserLanguage" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">系统语言:</div>
+                <div id="systemLanguage" class="info-value"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">时区:</div>
+                <div id="timezone" class="info-value"></div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>硬件信息</h2>
+            <div class="info-item">
+                <div class="info-label">CPU 逻辑处理器数:</div>
+                <div id="cpuCores" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">设备内存:</div>
+                <div id="deviceMemory" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">GPU 信息:</div>
+                <div id="gpuInfo" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">最大触摸点数:</div>
+                <div id="maxTouchPoints" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">电池状态:</div>
+                <div id="batteryStatus" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">设备方向支持:</div>
+                <div id="deviceOrientation" class="info-value">检测中...</div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>网络连接信息</h2>
+            <div class="info-item">
+                <div class="info-label">网络类型:</div>
+                <div id="networkType" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">网络下行速度:</div>
+                <div id="networkDownlink" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">网络延迟:</div>
+                <div id="networkRtt" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">数据保护模式:</div>
+                <div id="networkSaveData" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">IP 地址:</div>
+                <div id="ipAddress" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">WebRTC 支持:</div>
+                <div id="webrtcSupport" class="info-value">检测中...</div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>存储信息</h2>
+            <div class="info-item">
+                <div class="info-label">存储配额:</div>
+                <div id="storageQuota" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">已用存储空间:</div>
+                <div id="storageUsage" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">IndexedDB 支持:</div>
+                <div id="indexedDBSupport" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Cache API 支持:</div>
+                <div id="cacheAPISupport" class="info-value">检测中...</div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>安全特性</h2>
+            <div class="info-item">
+                <div class="info-label">Cookie 启用状态:</div>
+                <div id="cookieEnabled" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Do Not Track 状态:</div>
+                <div id="doNotTrack" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">隐私模式:</div>
+                <div id="incognitoMode" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">PDF 查看器:</div>
+                <div id="pdfViewerEnabled" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">内容安全策略:</div>
+                <div id="cspSupport" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">HTTPS 状态:</div>
+                <div id="httpsStatus" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Web 加密 API:</div>
+                <div id="cryptoAPI" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">第三方 Cookie 状态:</div>
+                <div id="thirdPartyCookies" class="info-value">检测中...</div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>媒体功能</h2>
+            <div class="info-item">
+                <div class="info-label">视频格式支持:</div>
+                <div id="videoFormats" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">音频格式支持:</div>
+                <div id="audioFormats" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">麦克风访问:</div>
+                <div id="microphoneAccess" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">摄像头访问:</div>
+                <div id="cameraAccess" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">WebGL 版本:</div>
+                <div id="webglVersion" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">WebGL 扩展:</div>
+                <div id="webglExtensions" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">系统字体:</div>
+                <div id="systemFonts" class="info-value">检测中...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">媒体录制支持:</div>
+                <div id="mediaRecorderSupport" class="info-value">检测中...</div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>浏览器功能支持</h2>
+            <div class="feature-support" id="featureSupport">
+                <!-- 功能支持项将通过JavaScript动态添加 -->
+            </div>
+        </div>
+    </div>
+    
+    <button class="refresh-button" onclick="location.reload()">刷新信息</button>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 显示用户代理
+            const userAgent = navigator.userAgent;
+            document.getElementById('userAgent').textContent = userAgent;
+            
+            // 复制用户代理
+            document.getElementById('copyUA').addEventListener('click', function() {
+                navigator.clipboard.writeText(userAgent)
+                    .then(() => {
+                        this.textContent = '已复制!';
+                        setTimeout(() => {
+                            this.textContent = '复制 User Agent';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('复制失败: ', err);
+                        this.textContent = '复制失败';
+                        setTimeout(() => {
+                            this.textContent = '复制 User Agent';
+                        }, 2000);
+                    });
+            });
+            
+            // 解析浏览器信息
+            function getBrowserInfo() {
+                const ua = navigator.userAgent;
+                let browserName = "未知";
+                let browserVersion = "未知";
+                let browserEngine = "未知";
+                
+                // 检测浏览器引擎
+                if (ua.indexOf("Trident") > -1) {
+                    browserEngine = "Trident";
+                } else if (ua.indexOf("Presto") > -1) {
+                    browserEngine = "Presto";
+                } else if (ua.indexOf("AppleWebKit") > -1) {
+                    browserEngine = "WebKit";
+                } else if (ua.indexOf("Gecko") > -1 && ua.indexOf("KHTML") === -1) {
+                    browserEngine = "Gecko";
+                }
+                
+                // 检测浏览器
+                if (ua.indexOf("Edge") > -1) {
+                    browserName = "Microsoft Edge (Legacy)";
+                    browserVersion = ua.match(/Edge\/([\d.]+)/)[1];
+                } else if (ua.indexOf("Edg") > -1) {
+                    browserName = "Microsoft Edge (Chromium)";
+                    browserVersion = ua.match(/Edg\/([\d.]+)/)[1];
+                } else if (ua.indexOf("Chrome") > -1 && ua.indexOf("Safari") > -1 && ua.indexOf("OPR") === -1) {
+                    browserName = "Google Chrome";
+                    browserVersion = ua.match(/Chrome\/([\d.]+)/)[1];
+                } else if (ua.indexOf("Firefox") > -1) {
+                    browserName = "Mozilla Firefox";
+                    browserVersion = ua.match(/Firefox\/([\d.]+)/)[1];
+                } else if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) {
+                    browserName = "Apple Safari";
+                    const safariVersionMatch = ua.match(/Version\/([\d.]+)/);
+                    browserVersion = safariVersionMatch ? safariVersionMatch[1] : "未知";
+                } else if (ua.indexOf("OPR") > -1 || ua.indexOf("Opera") > -1) {
+                    browserName = "Opera";
+                    const operaVersionMatch = ua.match(/(?:OPR|Opera)\/([\d.]+)/);
+                    browserVersion = operaVersionMatch ? operaVersionMatch[1] : "未知";
+                } else if (ua.indexOf("MSIE") > -1 || ua.indexOf("Trident") > -1) {
+                    browserName = "Internet Explorer";
+                    const ieVersionMatch = ua.match(/(?:MSIE |rv:)([\d.]+)/);
+                    browserVersion = ieVersionMatch ? ieVersionMatch[1] : "未知";
+                }
+                
+                return {
+                    name: browserName,
+                    version: browserVersion,
+                    engine: browserEngine
+                };
+            }
+            
+            // 获取操作系统信息
+            function getOSInfo() {
+                const ua = navigator.userAgent;
+                let osName = "未知";
+                
+                if (ua.indexOf("Windows NT 10.0") > -1) {
+                    osName = "Windows 10/11";
+                } else if (ua.indexOf("Windows NT 6.3") > -1) {
+                    osName = "Windows 8.1";
+                } else if (ua.indexOf("Windows NT 6.2") > -1) {
+                    osName = "Windows 8";
+                } else if (ua.indexOf("Windows NT 6.1") > -1) {
+                    osName = "Windows 7";
+                } else if (ua.indexOf("Windows NT 6.0") > -1) {
+                    osName = "Windows Vista";
+                } else if (ua.indexOf("Windows NT 5.1") > -1) {
+                    osName = "Windows XP";
+                } else if (ua.indexOf("Windows NT") > -1) {
+                    osName = "Windows NT";
+                } else if (ua.indexOf("Mac OS X") > -1) {
+                    osName = "macOS";
+                    const macVersionMatch = ua.match(/Mac OS X ([0-9_]+)/);
+                    if (macVersionMatch) {
+                        const macVersion = macVersionMatch[1].replace(/_/g, '.');
+                        osName += ` ${macVersion}`;
+                    }
+                } else if (ua.indexOf("iPhone") > -1) {
+                    osName = "iOS (iPhone)";
+                } else if (ua.indexOf("iPad") > -1) {
+                    osName = "iOS (iPad)";
+                } else if (ua.indexOf("Android") > -1) {
+                    osName = "Android";
+                    const androidVersionMatch = ua.match(/Android ([0-9.]+)/);
+                    if (androidVersionMatch) {
+                        osName += ` ${androidVersionMatch[1]}`;
+                    }
+                } else if (ua.indexOf("Linux") > -1) {
+                    osName = "Linux";
+                } else if (ua.indexOf("CrOS") > -1) {
+                    osName = "Chrome OS";
+                }
+                
+                return osName;
+            }
+            
+            // 获取设备类型
+            function getDeviceType() {
+                const ua = navigator.userAgent;
+                if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                    return "平板设备";
+                } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+                    return "移动设备";
+                }
+                return "桌面设备";
+            }
+            
+            // 填充浏览器信息
+            const browserInfo = getBrowserInfo();
+            document.getElementById('browserName').textContent = browserInfo.name;
+            document.getElementById('browserVersion').textContent = browserInfo.version;
+            document.getElementById('browserEngine').textContent = browserInfo.engine;
+            document.getElementById('isMobile').textContent = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "是" : "否";
+            
+            // 填充操作系统信息
+            document.getElementById('osInfo').textContent = getOSInfo();
+            document.getElementById('deviceType').textContent = getDeviceType();
+            
+            // 填充屏幕和窗口信息
+            document.getElementById('screenResolution').textContent = `${screen.width} × ${screen.height} 像素`;
+            
+            function updateWindowSize() {
+                document.getElementById('windowSize').textContent = `${window.innerWidth} × ${window.innerHeight} 像素`;
+            }
+            
+            updateWindowSize();
+            window.addEventListener('resize', updateWindowSize);
+            
+            document.getElementById('pixelRatio').textContent = window.devicePixelRatio;
+            document.getElementById('colorDepth').textContent = `${screen.colorDepth} 位`;
+            
+            // 填充语言和时区信息
+            document.getElementById('browserLanguage').textContent = navigator.language || "未知";
+            document.getElementById('systemLanguage').textContent = navigator.languages ? navigator.languages.join(", ") : "未知";
+            document.getElementById('timezone').textContent = `UTC${new Date().getTimezoneOffset() / -60 > 0 ? '+' : ''}${new Date().getTimezoneOffset() / -60} (${Intl.DateTimeFormat().resolvedOptions().timeZone || "未知"})`;
+            
+            // 获取硬件信息
+            // CPU 核心数
+            if (navigator.hardwareConcurrency) {
+                document.getElementById('cpuCores').textContent = navigator.hardwareConcurrency;
+            } else {
+                document.getElementById('cpuCores').textContent = "浏览器不支持检测";
+            }
+            
+            // 设备内存
+            if (navigator.deviceMemory) {
+                document.getElementById('deviceMemory').textContent = navigator.deviceMemory + " GB";
+            } else {
+                document.getElementById('deviceMemory').textContent = "浏览器不支持检测";
+            }
+            
+            // 电池状态
+            function updateBatteryStatus(battery) {
+                const batteryInfo = [];
+                if (battery) {
+                    batteryInfo.push(`电量: ${Math.round(battery.level * 100)}%`);
+                    batteryInfo.push(`充电状态: ${battery.charging ? '充电中' : '未充电'}`);
+                    if (!battery.charging && battery.dischargingTime !== Infinity) {
+                        const minutes = Math.floor(battery.dischargingTime / 60);
+                        batteryInfo.push(`剩余时间: 约${Math.floor(minutes / 60)}小时${minutes % 60}分钟`);
+                    }
+                }
+                document.getElementById('batteryStatus').textContent = batteryInfo.length > 0 ? batteryInfo.join(', ') : "浏览器不支持检测";
+            }
+            
+            if (navigator.getBattery) {
+                navigator.getBattery().then(updateBatteryStatus).catch(() => {
+                    document.getElementById('batteryStatus').textContent = "获取电池信息失败";
+                });
+            } else {
+                document.getElementById('batteryStatus').textContent = "浏览器不支持检测";
+            }
+            
+            // 设备方向支持
+            if (window.DeviceOrientationEvent) {
+                document.getElementById('deviceOrientation').textContent = "支持";
+            } else {
+                document.getElementById('deviceOrientation').textContent = "不支持";
+            }
+            
+            // GPU 信息
+            function getGPUInfo() {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (!gl) {
+                    return "WebGL 不可用";
+                }
+                
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) {
+                    const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                    const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    return `${vendor} - ${renderer}`;
+                } else {
+                    return "GPU 信息不可用";
+                }
+            }
+            
+            document.getElementById('gpuInfo').textContent = getGPUInfo();
+            
+            // 最大触摸点数
+            if (navigator.maxTouchPoints !== undefined) {
+                document.getElementById('maxTouchPoints').textContent = navigator.maxTouchPoints;
+            } else {
+                document.getElementById('maxTouchPoints').textContent = "浏览器不支持检测";
+            }
+            
+            // 网络连接信息
+            function updateNetworkInfo() {
+                const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                
+                if (connection) {
+                    // 网络类型
+                    document.getElementById('networkType').textContent = connection.type || "未知";
+                    
+                    // 网络下行速度
+                    if (connection.downlink) {
+                        document.getElementById('networkDownlink').textContent = connection.downlink + " Mbps";
+                    } else {
+                        document.getElementById('networkDownlink').textContent = "未知";
+                    }
+                    
+                    // 网络延迟
+                    if (connection.rtt) {
+                        document.getElementById('networkRtt').textContent = connection.rtt + " ms";
+                    } else {
+                        document.getElementById('networkRtt').textContent = "未知";
+                    }
+                    
+                    // 数据保护模式
+                    if (connection.saveData !== undefined) {
+                        document.getElementById('networkSaveData').textContent = connection.saveData ? "开启" : "关闭";
+                    } else {
+                        document.getElementById('networkSaveData').textContent = "未知";
+                    }
+                    
+                    // 监听网络变化
+                    if (connection.addEventListener) {
+                        connection.addEventListener('change', updateNetworkInfo);
+                    }
+                } else {
+                    document.getElementById('networkType').textContent = "浏览器不支持检测";
+                    document.getElementById('networkDownlink').textContent = "浏览器不支持检测";
+                    document.getElementById('networkRtt').textContent = "浏览器不支持检测";
+                    document.getElementById('networkSaveData').textContent = "浏览器不支持检测";
+                }
+            }
+            
+            updateNetworkInfo();
+            
+            // IP 地址检测
+            function checkIPAddress() {
+                // 注意：这种方法只能在本地环境或特定服务器环境下工作
+                // 实际应用中可能需要使用服务器端API
+                document.getElementById('ipAddress').textContent = "需要服务器端支持";
+                
+                // 如果有可用的API，可以取消下面的注释
+                /*
+                fetch('https://api.ipify.org?format=json')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('ipAddress').textContent = data.ip;
+                    })
+                    .catch(() => {
+                        document.getElementById('ipAddress').textContent = "获取失败";
+                    });
+                */
+            }
+            
+            checkIPAddress();
+            
+            // WebRTC 支持检测
+            function checkWebRTCSupport() {
+                const hasWebRTC = !!(navigator.mediaDevices && 
+                                   navigator.mediaDevices.getUserMedia && 
+                                   window.RTCPeerConnection);
+                
+                document.getElementById('webrtcSupport').textContent = hasWebRTC ? "支持" : "不支持";
+            }
+            
+            checkWebRTCSupport();
+            
+            // 存储信息检测
+            function checkStorageInfo() {
+                // IndexedDB 支持
+                document.getElementById('indexedDBSupport').textContent = window.indexedDB ? "支持" : "不支持";
+                
+                // Cache API 支持
+                document.getElementById('cacheAPISupport').textContent = window.caches ? "支持" : "不支持";
+                
+                // 存储配额和使用情况
+                if (navigator.storage && navigator.storage.estimate) {
+                    navigator.storage.estimate().then(estimate => {
+                        const quotaInMB = Math.round(estimate.quota / (1024 * 1024));
+                        const usageInMB = Math.round(estimate.usage / (1024 * 1024));
+                        const percentUsed = Math.round((estimate.usage / estimate.quota) * 100);
+                        
+                        document.getElementById('storageQuota').textContent = `${quotaInMB} MB`;
+                        document.getElementById('storageUsage').textContent = `${usageInMB} MB (${percentUsed}%)`;
+                    }).catch(() => {
+                        document.getElementById('storageQuota').textContent = "获取失败";
+                        document.getElementById('storageUsage').textContent = "获取失败";
+                    });
+                } else {
+                    document.getElementById('storageQuota').textContent = "浏览器不支持检测";
+                    document.getElementById('storageUsage').textContent = "浏览器不支持检测";
+                }
+            }
+            
+            checkStorageInfo();
+            
+            // 安全特性
+            // Cookie 启用状态
+            document.getElementById('cookieEnabled').textContent = navigator.cookieEnabled ? "启用" : "禁用";
+            
+            // Do Not Track 状态
+            const dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+            if (dnt) {
+                document.getElementById('doNotTrack').textContent = dnt === "1" || dnt === "yes" ? "开启" : "关闭";
+            } else {
+                document.getElementById('doNotTrack').textContent = "未设置";
+            }
+            
+            // 内容安全策略检测
+            function checkCSPSupport() {
+                const cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+                const cspHeader = document.contentSecurityPolicy || false;
+                
+                if (cspMeta || cspHeader) {
+                    document.getElementById('cspSupport').textContent = "已启用";
+                } else {
+                    document.getElementById('cspSupport').textContent = "未启用或无法检测";
+                }
+            }
+            
+            checkCSPSupport();
+            
+            // HTTPS 状态检测
+            function checkHTTPSStatus() {
+                const isSecure = window.location.protocol === 'https:';
+                document.getElementById('httpsStatus').textContent = isSecure ? "安全连接 (HTTPS)" : "非安全连接 (HTTP)";
+            }
+            
+            checkHTTPSStatus();
+            
+            // Web 加密 API 检测
+            function checkCryptoAPI() {
+                const hasCrypto = !!(window.crypto && window.crypto.subtle);
+                document.getElementById('cryptoAPI').textContent = hasCrypto ? "支持" : "不支持";
+            }
+            
+            checkCryptoAPI();
+            
+            // 第三方 Cookie 状态检测
+            function checkThirdPartyCookies() {
+                // 注意：这种检测方法不是100%准确，因为浏览器政策不断变化
+                try {
+                    const testIframe = document.createElement('iframe');
+                    testIframe.style.display = 'none';
+                    testIframe.src = 'about:blank';
+                    document.body.appendChild(testIframe);
+                    
+                    try {
+                        testIframe.contentWindow.document.cookie = "testThirdPartyCookie=1";
+                        const isCookieSet = testIframe.contentWindow.document.cookie.indexOf("testThirdPartyCookie=1") !== -1;
+                        document.getElementById('thirdPartyCookies').textContent = isCookieSet ? "允许" : "限制或阻止";
+                    } catch (e) {
+                        document.getElementById('thirdPartyCookies').textContent = "限制或阻止";
+                    }
+                    
+                    document.body.removeChild(testIframe);
+                } catch (e) {
+                    document.getElementById('thirdPartyCookies').textContent = "无法检测";
+                }
+            }
+            
+            checkThirdPartyCookies();
+            
+            // 隐私模式检测
+            function detectIncognito() {
+                try {
+                    // 尝试使用 localStorage
+                    localStorage.setItem('test', 'test');
+                    localStorage.removeItem('test');
+                    
+                    // 尝试使用 IndexedDB
+                    const idb = window.indexedDB.open('test');
+                    idb.onerror = function() {
+                        document.getElementById('incognitoMode').textContent = "可能开启";
+                    };
+                    idb.onsuccess = function() {
+                        document.getElementById('incognitoMode').textContent = "可能关闭";
+                    };
+                } catch (e) {
+                    document.getElementById('incognitoMode').textContent = "可能开启";
+                }
+            }
+            
+            detectIncognito();
+            
+            // PDF 查看器
+            function checkPDFViewer() {
+                const pdfPlugin = Array.from(navigator.plugins).find(plugin => 
+                    plugin.name.indexOf('PDF') !== -1 || 
+                    plugin.name.indexOf('Acrobat') !== -1
+                );
+                
+                if (pdfPlugin) {
+                    return "内置 PDF 查看器可用";
+                } else {
+                    return "未检测到内置 PDF 查看器";
+                }
+            }
+            
+            document.getElementById('pdfViewerEnabled').textContent = checkPDFViewer();
+            
+            // 媒体功能
+            // 视频格式支持
+            function checkVideoFormats() {
+                const video = document.createElement('video');
+                const formats = {
+                    mp4: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"',
+                    webm: 'video/webm; codecs="vp8, vorbis"',
+                    ogg: 'video/ogg; codecs="theora, vorbis"',
+                    hevc: 'video/mp4; codecs="hev1.1.6.L93.B0"',
+                    av1: 'video/mp4; codecs="av01.0.01M.08"'
+                };
+                
+                const supported = [];
+                
+                for (const [format, codec] of Object.entries(formats)) {
+                    if (video.canPlayType(codec)) {
+                        supported.push(format.toUpperCase());
+                    }
+                }
+                
+                return supported.length > 0 ? supported.join(', ') : "未检测到支持的格式";
+            }
+            
+            document.getElementById('videoFormats').textContent = checkVideoFormats();
+            
+            // 音频格式支持
+            function checkAudioFormats() {
+                const audio = document.createElement('audio');
+                const formats = {
+                    mp3: 'audio/mpeg',
+                    wav: 'audio/wav; codecs="1"',
+                    ogg: 'audio/ogg; codecs="vorbis"',
+                    aac: 'audio/aac',
+                    flac: 'audio/flac'
+                };
+                
+                const supported = [];
+                
+                for (const [format, codec] of Object.entries(formats)) {
+                    if (audio.canPlayType(codec)) {
+                        supported.push(format.toUpperCase());
+                    }
+                }
+                
+                return supported.length > 0 ? supported.join(', ') : "未检测到支持的格式";
+            }
+            
+            document.getElementById('audioFormats').textContent = checkAudioFormats();
+            
+            // 麦克风和摄像头访问
+            function checkMediaDevices() {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+                    document.getElementById('microphoneAccess').textContent = "浏览器不支持检测";
+                    document.getElementById('cameraAccess').textContent = "浏览器不支持检测";
+                    return;
+                }
+                
+                navigator.mediaDevices.enumerateDevices()
+                    .then(devices => {
+                        const hasMicrophone = devices.some(device => device.kind === 'audioinput');
+                        const hasCamera = devices.some(device => device.kind === 'videoinput');
+                        
+                        document.getElementById('microphoneAccess').textContent = hasMicrophone ? "设备可用" : "未检测到设备";
+                        document.getElementById('cameraAccess').textContent = hasCamera ? "设备可用" : "未检测到设备";
+                    })
+                    .catch(err => {
+                        document.getElementById('microphoneAccess').textContent = "权限被拒绝或不可用";
+                        document.getElementById('cameraAccess').textContent = "权限被拒绝或不可用";
+                    });
+            }
+            
+            checkMediaDevices();
+            
+            // WebGL 版本检测
+            function checkWebGLVersion() {
+                const canvas = document.createElement('canvas');
+                let gl = canvas.getContext('webgl2');
+                
+                if (gl) {
+                    document.getElementById('webglVersion').textContent = "WebGL 2.0";
+                } else {
+                    gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (gl) {
+                        document.getElementById('webglVersion').textContent = "WebGL 1.0";
+                    } else {
+                        document.getElementById('webglVersion').textContent = "不支持";
+                    }
+                }
+                
+                // WebGL 扩展检测
+                if (gl) {
+                    const extensions = gl.getSupportedExtensions();
+                    if (extensions && extensions.length > 0) {
+                        // 只显示一些重要的扩展，避免列表过长
+                        const importantExtensions = [
+                            'ANGLE_instanced_arrays',
+                            'EXT_blend_minmax',
+                            'EXT_color_buffer_half_float',
+                            'EXT_disjoint_timer_query',
+                            'EXT_float_blend',
+                            'EXT_frag_depth',
+                            'EXT_shader_texture_lod',
+                            'EXT_texture_filter_anisotropic',
+                            'OES_element_index_uint',
+                            'OES_standard_derivatives',
+                            'OES_texture_float',
+                            'OES_texture_float_linear',
+                            'OES_texture_half_float',
+                            'OES_vertex_array_object',
+                            'WEBGL_color_buffer_float',
+                            'WEBGL_compressed_texture_astc',
+                            'WEBGL_compressed_texture_etc',
+                            'WEBGL_compressed_texture_s3tc',
+                            'WEBGL_debug_renderer_info',
+                            'WEBGL_depth_texture'
+                        ];
+                        
+                        const supportedImportant = importantExtensions.filter(ext => extensions.includes(ext));
+                        document.getElementById('webglExtensions').textContent = 
+                            supportedImportant.length > 0 ? 
+                            `支持 ${supportedImportant.length} 个重要扩展，总共 ${extensions.length} 个扩展` : 
+                            `支持 ${extensions.length} 个扩展`;
+                    } else {
+                        document.getElementById('webglExtensions').textContent = "未检测到扩展";
+                    }
+                } else {
+                    document.getElementById('webglExtensions').textContent = "不适用";
+                }
+            }
+            
+            checkWebGLVersion();
+            
+            // 系统字体检测
+            function checkSystemFonts() {
+                // 注意：这种方法只能检测到有限的系统字体
+                const baseFonts = ['monospace', 'sans-serif', 'serif'];
+                const fontList = [
+                    'Arial', 'Arial Black', 'Arial Narrow', 'Calibri', 'Cambria', 'Cambria Math',
+                    'Comic Sans MS', 'Consolas', 'Courier', 'Courier New', 'Georgia', 'Helvetica',
+                    'Impact', 'Lucida Console', 'Lucida Sans Unicode', 'Microsoft Sans Serif',
+                    'MS Gothic', 'MS PGothic', 'MS Sans Serif', 'MS Serif', 'Palatino Linotype',
+                    'Segoe UI', 'Tahoma', 'Times', 'Times New Roman', 'Trebuchet MS', 'Verdana',
+                    '宋体', '黑体', '微软雅黑', '楷体', '仿宋', '新宋体', '华文细黑', '华文楷体', '华文宋体'
+                ];
+                
+                const testString = 'mmmmmmmmmmlli';
+                const testSize = '72px';
+                const h = document.createElement('div');
+                
+                h.style.cssText = 'position: absolute; left: -9999px; visibility: hidden; display: block !important';
+                document.body.appendChild(h);
+                
+                const defaultWidth = {};
+                const defaultHeight = {};
+                
+                // 获取基础字体的宽度和高度
+                for (const font of baseFonts) {
+                    h.style.fontFamily = font;
+                    h.textContent = testString;
+                    h.style.fontSize = testSize;
+                    defaultWidth[font] = h.offsetWidth;
+                    defaultHeight[font] = h.offsetHeight;
+                }
+                
+                const result = [];
+                const limit = 10; // 限制显示的字体数量
+                
+                // 检测字体是否存在
+                for (const font of fontList) {
+                    let detected = false;
+                    
+                    for (const baseFont of baseFonts) {
+                        h.style.fontFamily = `'${font}', ${baseFont}`;
+                        h.textContent = testString;
+                        h.style.fontSize = testSize;
+                        
+                        if (h.offsetWidth !== defaultWidth[baseFont] || h.offsetHeight !== defaultHeight[baseFont]) {
+                            detected = true;
+                            break;
+                        }
+                    }
+                    
+                    if (detected && result.length < limit) {
+                        result.push(font);
+                    }
+                }
+                
+                document.body.removeChild(h);
+                
+                if (result.length > 0) {
+                    document.getElementById('systemFonts').textContent = `检测到 ${result.length} 种字体，包括: ${result.join(', ')}${result.length < fontList.length ? ' 等' : ''}`;
+                } else {
+                    document.getElementById('systemFonts').textContent = "无法检测系统字体";
+                }
+            }
+            
+            checkSystemFonts();
+            
+            // 媒体录制支持检测
+            function checkMediaRecorderSupport() {
+                if (window.MediaRecorder) {
+                    const mimeTypes = [
+                        'video/webm',
+                        'video/webm;codecs=vp8',
+                        'video/webm;codecs=vp9',
+                        'video/webm;codecs=h264',
+                        'video/mp4',
+                        'audio/webm',
+                        'audio/webm;codecs=opus',
+                        'audio/mp3'
+                    ];
+                    
+                    const supported = mimeTypes.filter(type => MediaRecorder.isTypeSupported(type));
+                    
+                    if (supported.length > 0) {
+                        document.getElementById('mediaRecorderSupport').textContent = `支持 (${supported.length} 种格式)`;
+                    } else {
+                        document.getElementById('mediaRecorderSupport').textContent = "支持，但无法检测具体格式";
+                    }
+                } else {
+                    document.getElementById('mediaRecorderSupport').textContent = "不支持";
+                }
+            }
+            
+            checkMediaRecorderSupport();
+            
+            // 检测浏览器功能支持
+            const features = [
+                { name: "WebGL", test: () => !!window.WebGLRenderingContext },
+                { name: "WebGL 2.0", test: () => !!window.WebGL2RenderingContext },
+                { name: "Canvas", test: () => {
+                    const canvas = document.createElement('canvas');
+                    return !!(canvas.getContext && canvas.getContext('2d'));
+                }},
+                { name: "WebP 图像格式", test: () => {
+                    const canvas = document.createElement('canvas');
+                    if (canvas.getContext && canvas.getContext('2d')) {
+                        return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+                    }
+                    return false;
+                }},
+                { name: "AVIF 图像格式", test: () => {
+                    const img = new Image();
+                    img.src = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=';
+                    return img.complete;
+                }},
+                { name: "WebRTC", test: () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) },
+                { name: "地理位置 API", test: () => !!navigator.geolocation },
+                { name: "Web 通知", test: () => !!window.Notification },
+                { name: "Web 存储 (localStorage)", test: () => !!window.localStorage },
+                { name: "Web 存储 (sessionStorage)", test: () => !!window.sessionStorage },
+                { name: "IndexedDB", test: () => !!window.indexedDB },
+                { name: "Web Workers", test: () => !!window.Worker },
+                { name: "Service Workers", test: () => 'serviceWorker' in navigator },
+                { name: "WebSockets", test: () => !!window.WebSocket },
+                { name: "Web Audio API", test: () => !!(window.AudioContext || window.webkitAudioContext) },
+                { name: "Web 蓝牙", test: () => !!(navigator.bluetooth) },
+                { name: "Web USB", test: () => !!(navigator.usb) },
+                { name: "Web 共享 API", test: () => !!(navigator.share) },
+                { name: "剪贴板 API", test: () => !!(navigator.clipboard) },
+                { name: "全屏 API", test: () => !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen) },
+                { name: "网络信息 API", test: () => !!(navigator.connection) },
+                { name: "电池状态 API", test: () => !!(navigator.getBattery) },
+                { name: "设备方向 API", test: () => !!(window.DeviceOrientationEvent) },
+                { name: "设备运动 API", test: () => !!(window.DeviceMotionEvent) },
+                { name: "触摸事件", test: () => 'ontouchstart' in window },
+                { name: "WebVR", test: () => !!(navigator.getVRDisplays) },
+                { name: "WebXR", test: () => !!(navigator.xr) },
+                { name: "Web NFC", test: () => !!(navigator.nfc) },
+                { name: "Web 语音识别", test: () => !!(window.SpeechRecognition || window.webkitSpeechRecognition) },
+                { name: "Web 语音合成", test: () => !!(window.speechSynthesis) },
+                { name: "Web 支付 API", test: () => !!(window.PaymentRequest) },
+                { name: "Web 认证", test: () => !!(navigator.credentials && navigator.credentials.create) },
+                { name: "Web MIDI", test: () => !!(navigator.requestMIDIAccess) },
+                { name: "Web 锁屏 API", test: () => !!(navigator.wakeLock) },
+                { name: "Web 串行 API", test: () => !!(navigator.serial) },
+                { name: "Web HID", test: () => !!(navigator.hid) },
+                { name: "Web 文件系统", test: () => !!(window.showOpenFilePicker) },
+                { name: "Web 共享存储", test: () => !!(navigator.storage && navigator.storage.getDirectory) },
+                { name: "Web 加密 API", test: () => !!(window.crypto && window.crypto.subtle) },
+                { name: "Web 性能 API", test: () => !!(window.performance) },
+                { name: "Web 动画 API", test: () => !!(window.Animation) },
+                { name: "Web 背景同步", test: () => !!('SyncManager' in window) },
+                { name: "Web 推送 API", test: () => !!('PushManager' in window) },
+                { name: "画中画 API", test: () => !!(document.pictureInPictureEnabled) },
+                { name: "Web 共享目标 API", test: () => !!(navigator.canShare) },
+                { name: "Web 通知权限", test: () => !!(window.Notification && Notification.permission) },
+                { name: "Web 蓝牙扫描", test: () => !!(navigator.bluetooth && navigator.bluetooth.requestLEScan) },
+                { name: "Web 传感器 API", test: () => !!(window.Sensor || window.Accelerometer || window.Gyroscope) },
+                { name: "Web 环境光传感器", test: () => !!(window.AmbientLightSensor) },
+                { name: "Web 接近传感器", test: () => !!(window.ProximitySensor) },
+                { name: "Web 磁力计", test: () => !!(window.Magnetometer) },
+                { name: "Web 陀螺仪", test: () => !!(window.Gyroscope) },
+                { name: "Web 加速度计", test: () => !!(window.Accelerometer) },
+                { name: "Web 重力传感器", test: () => !!(window.GravitySensor) },
+                { name: "Web 线性加速度传感器", test: () => !!(window.LinearAccelerationSensor) },
+                { name: "Web 屏幕方向锁定", test: () => !!(screen.orientation && screen.orientation.lock) },
+                { name: "Web 振动 API", test: () => !!(navigator.vibrate) },
+                { name: "Web 联系人 API", test: () => !!(navigator.contacts) },
+                { name: "Web 文件处理 API", test: () => !!(window.FileReader) },
+                { name: "Web 拖放 API", test: () => 'draggable' in document.createElement('div') },
+                { name: "Web 全屏 API", test: () => !!(document.fullscreenEnabled) },
+                { name: "Web 指针锁定 API", test: () => !!(document.pointerLockElement !== undefined) },
+                { name: "Web 游戏手柄 API", test: () => !!(navigator.getGamepads) }
+            ];
+            
+            const featureSupportContainer = document.getElementById('featureSupport');
+            
+            features.forEach(feature => {
+                let isSupported = false;
+                try {
+                    isSupported = feature.test();
+                } catch (e) {
+                    isSupported = false;
+                }
+                
+                const featureItem = document.createElement('div');
+                featureItem.className = `feature-item ${isSupported ? 'supported' : 'not-supported'}`;
+                
+                const featureIcon = document.createElement('span');
+                featureIcon.className = 'feature-icon';
+                featureIcon.textContent = isSupported ? '✓' : '✗';
+                
+                const featureText = document.createElement('span');
+                featureText.textContent = feature.name;
+                
+                featureItem.appendChild(featureIcon);
+                featureItem.appendChild(featureText);
+                featureSupportContainer.appendChild(featureItem);
+            });
+        });
+    </script>
+</body>
+</html>
